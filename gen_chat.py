@@ -327,7 +327,7 @@ def build_toc():
 
 n_turns = len(turns)
 n_user = sum(1 for t in turns for i in t["items"] if i["k"] == "user")
-n_ai = sum(1 for t in turns for i in t["items"] if i["k"] == "assistant")
+n_ai = sum(1 for t in turns for i in t["items"] if i["k"] == "assistant" and i["t"].strip())
 n_tools = sum(v.get("count", 0) for v in tools.values())
 n_days = len({datetime.datetime.fromtimestamp(t["items"][0]["ts"] / 1000).date() for t in turns})
 
