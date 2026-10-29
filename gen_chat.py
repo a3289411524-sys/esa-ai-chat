@@ -330,6 +330,7 @@ n_user = sum(1 for t in turns for i in t["items"] if i["k"] == "user")
 n_ai = sum(1 for t in turns for i in t["items"] if i["k"] == "assistant" and i["t"].strip())
 n_tools = sum(v.get("count", 0) for v in tools.values())
 n_days = len({datetime.datetime.fromtimestamp(t["items"][0]["ts"] / 1000).date() for t in turns})
+span_days = (turns[-1]["items"][0]["ts"] - turns[0]["items"][0]["ts"]) / 86400000.0
 
 CSS = """
 :root{
@@ -446,7 +447,7 @@ doc = """<!DOCTYPE html>
     <div class="stat"><div class="v">%(n_user)d</div><div class="k">用户提问</div></div>
     <div class="stat"><div class="v">%(n_ai)d</div><div class="k">AI 文字回应</div></div>
     <div class="stat"><div class="v">%(n_tools)d</div><div class="k">工具调用次数</div></div>
-    <div class="stat"><div class="v">%(n_days)d</div><div class="k">跨度（天）</div></div>
+    <div class="stat"><div class="v">%(n_days)d</div><div class="k">活跃天数</div></div>
   </div>
 
   <p class="note"><b>关于脱敏：</b>对话中出现的第三方网址已统一去除链接化处理；少数指向盗版教材站、作业代做平台与搜索引擎结果页的站点名做了中性化替换，替换位置以方括号标注。除此之外，全部提问与回应的文字内容均未改动、未删减、未重写。</p>
@@ -464,7 +465,7 @@ doc = """<!DOCTYPE html>
 <footer class="footer">
   <h3>记录说明</h3>
   <ul>
-    <li>记录区间：2026-10-14 至 2026-10-29，跨 %(n_days)d 个自然日，覆盖作业的全部推进阶段。</li>
+    <li>记录区间：2026-10-14 至 2026-10-29，时间跨度 %(span_days).1f 天，其中 %(n_days)d 天有实际交互，覆盖作业的全部推进阶段。</li>
     <li>统计口径：轮次按一次“用户提问 → AI 回应”的完整交互计；AI 回应可能分多次输出，均按原顺序保留；工具调用次数为该轮内 AI 实际发起的工具调用总数。</li>
     <li>工具调用明细：原始工具输出（含网页正文、文件内容等）不在本页展示，仅保留工具名称与调用次数，以免冗长内容掩盖对话本身。</li>
     <li>内容一致性：保留全部问答原文，未做摘要、改写或节选；仅对第三方网址做去链接与中性化处理。</li>
@@ -482,6 +483,7 @@ doc = """<!DOCTYPE html>
     "n_ai": n_ai,
     "n_tools": n_tools,
     "n_days": n_days,
+    "span_days": span_days,
     "toc": build_toc(),
     "body": build_body(),
 }
