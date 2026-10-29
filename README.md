@@ -24,9 +24,18 @@ https://a3289411524-sys.github.io/esa-ai-chat/
 
 ## 重新生成
 
-数据源为本地 SQLite 导出的问答流水与快照中的工具调用统计，生成脚本见
-上级目录 `_生成脚本/`（`gen_chat.py` 及配套导出脚本）。重新生成后提交本目录的
-`index.html` 即可，GitHub Pages 会自动重新部署。
+数据源为本地消息库与 session 快照，脚本全部在 `_生成脚本/`（与中间数据同级，可直接运行）：
+
+| 顺序 | 脚本 | 作用 | 产出 |
+|---|---|---|---|
+| 1 | `export_qa.py` | 从本地消息库 SQLite 导出问答流水 | `qa.json` |
+| 2 | `extract_toolcalls.py` | 从 session 快照统计每轮工具调用次数与工具名 | `tools_by_turn.json` |
+| 3 | `gen_chat.py` | 渲染脱敏后的对话记录页 | 上级目录 `index.html` |
+
+三步跑完提交本目录的 `index.html` 即可，GitHub Pages 会自动重新部署。
+
+依赖：`export_qa.py` 需 `sqlite3`（标准库），`extract_toolcalls.py` 需 `json/os/bisect`（标准库），
+`gen_chat.py` 需 `json/re/html/os/datetime`（标准库）。三者均不依赖第三方包。
 
 ## 本地预览
 
